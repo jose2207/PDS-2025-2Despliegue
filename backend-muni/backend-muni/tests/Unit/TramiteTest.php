@@ -5,6 +5,7 @@ namespace Tests\Unit;
 use Tests\TestCase;
 use App\Models\TipoTramite;
 
+
 class TramiteTest extends TestCase
 {
     /** @test */

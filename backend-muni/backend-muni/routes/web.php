@@ -32,17 +32,17 @@ Route::middleware('guest')->group(function () {
 
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [WebController::class, 'logout'])->name('logout');
-    
+
     // Dashboard
     Route::get('/dashboard', [WebController::class, 'dashboard'])->name('dashboard');
-    
+
     // Expedientes Additional Routes (must come before resource routes)
     Route::prefix('expedientes')->name('expedientes.')->group(function () {
         Route::get('/pendientes', [WebController::class, 'expedientesPendientes'])->name('pendientes');
         Route::get('/proceso', [WebController::class, 'expedientesProceso'])->name('proceso');
         Route::get('/finalizados', [WebController::class, 'expedientesFinalizados'])->name('finalizados');
     });
-    
+
     // Expedientes Routes (Web Views)
     Route::resource('expedientes', ExpedienteController::class)->names([
         'index' => 'expedientes.index',
@@ -53,7 +53,7 @@ Route::middleware('auth')->group(function () {
         'update' => 'expedientes.update',
         'destroy' => 'expedientes.destroy'
     ]);
-    
+
     // Gerencias Routes (Web Views)
     Route::resource('gerencias', GerenciaController::class);
     Route::patch('/gerencias/{gerencia}/toggle-status', [GerenciaController::class, 'toggleStatus'])->name('gerencias.toggle-status');
@@ -113,7 +113,7 @@ Route::middleware('auth')->group(function () {
     //     Route::get('/derivacion', [WebController::class, 'mesaPartesDerivacion'])->name('derivacion');
     //     Route::get('/registro', [WebController::class, 'mesaPartesRegistro'])->name('registro');
     // });
-    
+
     // Trámites Routes (Admin)
     Route::resource('tramites', \App\Http\Controllers\TramiteController::class)->names([
         'index' => 'tramites.index',
@@ -124,7 +124,7 @@ Route::middleware('auth')->group(function () {
         'update' => 'tramites.update',
         'destroy' => 'tramites.destroy'
     ]);
-    
+
     // Rutas para Ciudadanos - Solicitar Trámites
     Route::prefix('ciudadano')->name('ciudadano.')->middleware(['role:ciudadano'])->group(function () {
         Route::get('/tramites', [\App\Http\Controllers\CiudadanoTramiteController::class, 'index'])->name('tramites.index');
@@ -144,7 +144,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/tramites/{id}/rechazar', [\App\Http\Controllers\GerenciaTramiteController::class, 'rechazar'])->name('tramites.rechazar');
         Route::post('/tramites/{id}/observacion', [\App\Http\Controllers\GerenciaTramiteController::class, 'agregarObservacion'])->name('tramites.observacion');
     });
-    
+
     // Reportes Routes
     Route::prefix('reportes')->name('reportes.')->group(function () {
         Route::get('/', [WebController::class, 'reportes'])->name('index');
@@ -152,25 +152,25 @@ Route::middleware('auth')->group(function () {
         Route::get('/tramites', [WebController::class, 'reportesTramites'])->name('tramites');
         Route::get('/tiempos', [WebController::class, 'reportesTiempos'])->name('tiempos');
     });
-    
+
     // Profile Routes
     Route::get('/profile', [WebController::class, 'profile'])->name('profile.show');
     Route::patch('/profile', [WebController::class, 'updateProfile'])->name('profile.update');
     Route::get('/settings', [WebController::class, 'settings'])->name('settings');
-    
+
     // Admin Routes
     Route::middleware(['role:superadministrador|administrador'])->group(function () {
         // Usuarios CRUD
         Route::resource('usuarios', UsuarioController::class);
         Route::patch('/usuarios/{usuario}/toggle-status', [UsuarioController::class, 'toggleStatus'])->name('usuarios.toggle-status');
-        
+
         // Roles CRUD
         Route::resource('roles', RoleController::class);
         Route::post('/roles/{role}/assign-permissions', [RoleController::class, 'assignPermissions'])->name('roles.assign-permissions');
-        
+
         Route::get('/permisos', [WebController::class, 'permisos'])->name('permisos.index');
         Route::get('/configuracion', [WebController::class, 'configuracion'])->name('configuracion.index');
-        
+
         // API Routes para la interfaz web (usan auth:web en lugar de auth:sanctum)
         Route::prefix('api')->group(function () {
             // Permisos
@@ -181,7 +181,7 @@ Route::middleware('auth')->group(function () {
                 Route::put('/{permission}', [RolePermissionController::class, 'updatePermission']);
                 Route::delete('/{permission}', [RolePermissionController::class, 'deletePermission']);
             });
-            
+
             // Roles
             Route::prefix('roles')->group(function () {
                 Route::get('/', [RolePermissionController::class, 'getRoles']);
