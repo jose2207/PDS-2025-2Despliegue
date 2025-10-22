@@ -1,0 +1,45 @@
+pipeline {
+    agent any
+
+    environment {
+        SONAR_HOST_URL = 'http://172.19.0.2:9000'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Install dependencies') {
+            steps {
+                sh 'composer install'
+            }
+        }
+
+        stage('Run Tests') {
+            steps {
+                sh 'php artisan test --coverage-clover=storage/coverage.xml'
+            }
+        }
+
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv('SonarQube-Docker') {
+                    withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_TOKEN')]) {
+                        sh 'sonar-scanner -Dsonar.login=$SONAR_TOKEN'
+                    }
+                }
+            }
+        }
+
+        stage('Quality Gate') {
+            steps {
+                timeout(time: 2, unit: 'MINUTES') {
+                    waitForQualityGate abortPipeline: true
+                }
+            }
+        }
+    }
+}
